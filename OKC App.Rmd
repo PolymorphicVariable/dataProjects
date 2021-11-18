@@ -1,0 +1,56 @@
+---
+title: "OKC App"
+author: "Daniel Mertus"
+date: "11/18/2021"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r, include=FALSE}
+library(sqldf)
+options(warn=-1)
+```
+
+```{r}
+teamA_shots <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team A' ")
+plot(teamA_shots[,2], teamA_shots[,3], main="Team A Shooting Dist", xlab="", ylab="")
+teamA_C3 <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team A' and y <= 7.8 and (x >= 22 or x <= -22)")
+points(teamA_C3[,2], teamA_C3[,3], col="red")
+teamA_NC3 <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team A' and y > 7.8 and POWER(POWER(x,2) + POWER(y,2), 0.5) >= 23.75 ")
+points(teamA_NC3[,2], teamA_NC3[,3], col="blue")
+teamA_2PT <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team A' and ((y <= 7.8 and (x < 22 and x > -22)) or (y > 7.8 and POWER(POWER(x,2) + POWER(y,2), 0.5) < 23.75)) ")
+points(teamA_2PT[,2], teamA_2PT[,3], col="green")
+
+nrow(teamA_shots) 
+nrow(teamA_C3) + nrow(teamA_NC3) + nrow(teamA_2PT)
+
+```
+\
+`r (nrow(teamA_2PT)/nrow(teamA_shots)) * 100`% of Team A's shots were 2PTs, `r (nrow(teamA_C3)/nrow(teamA_shots)) * 100`% were C3s, and `r (nrow(teamA_NC3)/nrow(teamA_shots)) * 100`% were NC3s\
+\
+Team A had a eFG% of `r table(teamA_2PT$fgmade)[2] / nrow(teamA_2PT) * 100`% shooting 2PTs, `r (1.5 * table(teamA_C3$fgmade)[2]) / nrow(teamA_C3) * 100`% shooting C3s, and `r (1.5 * table(teamA_NC3$fgmade)[2]) / nrow(teamA_NC3) * 100`% shooting NC3s,\
+```{r}
+teamB_shots <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team B' ")
+plot(teamB_shots[,2], teamB_shots[,3], main="Team B Shooting Dist", xlab="", ylab="")
+teamB_C3 <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team B' and y <= 7.8 and (x >= 22 or x <= -22)")
+points(teamB_C3[,2], teamB_C3[,3], col="red")
+teamB_NC3 <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team B' and y > 7.8 and POWER(POWER(x,2) + POWER(y,2), 0.5) >= 23.75 ")
+points(teamB_NC3[,2], teamB_NC3[,3], col="blue")
+teamB_2PT <- read.csv.sql("./shots_data.csv", "select * from file where team = 'Team B' and ((y <= 7.8 and (x < 22 and x > -22)) or (y > 7.8 and POWER(POWER(x,2) + POWER(y,2), 0.5) < 23.75)) ")
+points(teamB_2PT[,2], teamB_2PT[,3], col="green")
+
+nrow(teamB_shots) 
+nrow(teamB_C3) + nrow(teamB_NC3) + nrow(teamB_2PT)
+
+```
+\
+`r (nrow(teamB_2PT)/nrow(teamB_shots)) * 100`% of Team B's shots were 2PTs, `r (nrow(teamB_C3)/nrow(teamB_shots)) * 100`% were C3s, and `r (nrow(teamB_NC3)/nrow(teamB_shots)) * 100`% were NC3s\
+\
+Team B had a eFG% of `r table(teamB_2PT$fgmade)[2] / nrow(teamB_2PT) * 100`% shooting 2PTs, `r (1.5 * table(teamB_C3$fgmade)[2]) / nrow(teamB_C3) * 100`% shooting C3s, and `r (1.5 * table(teamB_NC3$fgmade)[2]) / nrow(teamB_NC3) * 100`% shooting NC3s,\
+
